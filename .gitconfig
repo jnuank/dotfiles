@@ -18,7 +18,7 @@
   ds = "diff --staged"
   f = "fetch -p"
   s = "status -s"
-  l = "log --graph --decorate --date=format:'%Y-%m-%d %H:%M:%S' --pretty=format:'%C(bold green)%h%Creset %C(yellow)%d%Creset %cd %C(cyan)%an%Creset %s'"
+  l = "log --graph --decorate --date=format:'%Y-%m-%d %H:%M:%S' --pretty=format:'%C(ul bold yellow)%h%Creset %C(auto)%d%Creset %cd %C(cyan)%an%Creset %s'"
   lv = "log --oneline --graph --pretty=fuller"
   ps = "push origin HEAD"
   pl = "!gpl() { git pull origin \"$(git symbolic-ref --short HEAD)\"; }; gpl"
