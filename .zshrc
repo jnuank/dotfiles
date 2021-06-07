@@ -1,22 +1,78 @@
-# Set up the prompt
-
-autoload -Uz promptinit
-promptinit
-prompt adam1
-
-setopt histignorealldups sharehistory
 
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
+
+setopt histignorealldups sharehistory
+
+# Set up the prompt
+
+autoload -Uz promptinit && promptinit
+autoload -Uz colors && colors
+autoload -Uz vcs_info
+#prompt adam1
+
+setopt prompt_subst
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' stagedstr "%F{green}!"
+zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
+zstyle ':vcs_info:*' formats " %c%u%b"
+zstyle ':vcs_info:*' actionformats ' %c%u%b[%a]'
+
 
 # Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
 HISTSIZE=1000
 SAVEHIST=1000
 HISTFILE=~/.zsh_history
 
+
+function check_commits() {
+  PROMPT_COMMITS_MARK=""
+
+  git rev-parse --show-toplevel --quiet >/dev/null 2>&1
+  if [[ $? -eq 0 ]]
+  then
+    BRANCH="$(git symbolic-ref --short HEAD 2>/dev/null)"
+    if [[ "$BRANCH" != "" ]]
+    then
+      UP="⇡"
+      DOWN="⇣"
+      RIGHT="⇢"
+      UNPUSHED_MARK="$(git log --oneline "origin/$BRANCH..$BRANCH" 2>/dev/null | wc -l | awk '$1>0{print "'"$UP"'"}')"
+      UNPULLED_MARK="$(git log --oneline "$BRANCH..origin/$BRANCH" 2>/dev/null | wc -l | awk '$1>0{print "'"$DOWN"'"}')"
+      if [[ "$UNPUSHED_MARK" = "" ]]
+      then
+        UNPUSHED_MARK="$(git branch -r 2>/dev/null | grep "$BRANCH" | wc -l | awk '$1==0{print "'"$RIGHT"'"}')"
+      fi
+      PROMPT_COMMITS_MARK="$UNPUSHED_MARK$UNPULLED_MARK"
+    fi
+  fi
+}
+
+function precmd() {
+#	print ""
+}
+
+function precmd_prompt() {
+  vcs_info
+  check_commits
+  PROMPT_EXEC_TIME_NOW="$(date +%s%3N)"
+  PROMPT_EXEC_TIME="$(echo "scale=1; ($PROMPT_EXEC_TIME_NOW - ${PROMPT_EXEC_TIME_START:-"$PROMPT_EXEC_TIME_NOW"}) / 1000" | bc)s"
+}
+function preexec_prompt() {
+  PROMPT_EXEC_TIME_START="$(date +%s%3N)"
+}
+add-zsh-hook precmd precmd_prompt
+add-zsh-hook preexec preexec_prompt
+
+
+#PROMPT=$PROMPT'${vcs_info_msg_0_}'
+PROMPT='%F{blue}%~%f%F{008}${vcs_info_msg_0_}%F{cyan}$PROMPT_COMMITS_MARK%f%(?..%F{red} (%?%))%f %F{008}$PROMPT_EXEC_TIME%f %F{yellow}%*%f%(?.%F{magenta}.%F{red})$ %f'
+
+
 # Use modern completion system
 autoload -Uz compinit
 compinit
+
 
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _expand _complete _correct _approximate
@@ -37,6 +93,7 @@ zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 
+
 # 自己設定
 
 # GitHub CLI補完
@@ -48,8 +105,8 @@ eval "$(gh completion -s zsh)"
 
 # コマンドプロンプトの表示変更
 # 
-export PS1="%1~ %# "
-export PROMPT=$PS1
+#export PS1="%1~ %# "
+#export PROMPT=$PS1
 
 # clipboard alias
 alias pbcopy='xclip -selection c'
@@ -68,6 +125,9 @@ xmodmap ~/.Xmodmap
 
 # PATH追加
 PATH=$PATH:/home/jun/Settings/adr-tools-3.0.0/src
+PATH=$PATH:/usr/local/bin/dart-sdk/bin/
+PATH=$PATH:$HOME/.pub-cache/bin
+
 
 # dotnet cli補完
 # zsh parameter completion for the dotnet CLI
@@ -80,21 +140,9 @@ _dotnet_zsh_complete()
 
 compctl -K _dotnet_zsh_complete dotnet
 
-
-
-
 # Bashからのお引越し
 #
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
-
-# If not running interactively, don't do anything
-case $- in
-    *i*) ;;
-      *) return;;
-esac
-
+#
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
@@ -105,14 +153,6 @@ HISTCONTROL=ignoreboth
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
-
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-#shopt -s checkwinsize
-
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -148,7 +188,7 @@ fi
 #else
 #    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 #fi
-unset color_prompt force_color_prompt
+#unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
