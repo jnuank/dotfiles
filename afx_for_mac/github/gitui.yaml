@@ -1,0 +1,16 @@
+github:
+  - name: extrawurst/gitui
+    description: git operation for tui
+    owner: extrawurst
+    repo: gitui
+    release:
+      name: gitui
+      tag: v0.24.3
+      asset:
+        filename: gitui-linux-musl.tar.gz
+    command:
+      link:
+        - from: '*gitui*'
+          to: gitui
+      alias:
+        gu: gitui

@@ -1,0 +1,9 @@
+github:
+  - name: asdf-vm/asdf
+    description: version management tool
+    owner: asdf-vm
+    repo: asdf
+    plugin:
+      sources:
+        - ~/.afx/github.com/asdf-vm/asdf/asdf.sh
+          

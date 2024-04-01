@@ -1,0 +1,20 @@
+http:
+  - name: krew 
+    description: kubectl plugin manager
+    url: https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-darwin_arm64.tar.gz
+    command:
+      build:
+        steps:
+          - ./krew-darwin_arm64 install krew
+          - ./krew-darwin_arm64 install iexec neat open-svc prompt resource-capacity status stern view-secret ctx ns
+      link:
+        - from: krew-darwin_arm64
+          to: krew
+      alias:
+        kct: kubectl ctx
+        kns: kubectl ns
+        kvs: kubectl view-secret -a
+      env: 
+        PATH: "${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+    depends-on:
+      - kubectl
