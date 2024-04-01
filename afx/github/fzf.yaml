@@ -1,0 +1,11 @@
+github:
+  - name: junegunn/fzf
+    description: command-line fuzzy finder
+    owner: junegunn
+    repo: fzf
+    command:
+      build:
+        steps:
+          - ./install --bin --no-update-rc
+      link:
+        - from: bin/fzf

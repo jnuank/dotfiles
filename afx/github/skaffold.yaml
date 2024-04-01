@@ -1,0 +1,11 @@
+github:
+  - name: GoogleContainerTools/skaffold
+    description: Command-line JSON processor
+    owner: GoogleContainerTools
+    repo: skaffold
+    release: 
+      name: skaffold
+      tag: v2.10.0
+    command:
+      link:
+        - from: 'skaffold'

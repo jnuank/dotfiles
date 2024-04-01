@@ -1,0 +1,13 @@
+http:
+    - name: kubectl
+      description: Kubernetes CLI
+      url: https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl
+      command:
+          link:
+            - from: kubectl
+          alias:
+            k: kubectl
+          snippet: |
+            source <(kubectl completion zsh)
+      depends-on:
+        - sdkman
